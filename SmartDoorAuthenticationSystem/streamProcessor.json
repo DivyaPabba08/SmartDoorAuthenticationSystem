@@ -1,0 +1,20 @@
+{
+	"Name": "streamProcessor",
+	"Input": {
+		"KinesisVideoStream": {
+			"Arn": "arn:aws:kinesisvideo:us-east-1:176748515449:stream/6998-hw2/1605477249395"
+		}
+	},
+	"Output": {
+		"KinesisDataStream": {
+			"Arn": "arn:aws:kinesis:us-east-1:176748515449:stream/6998-hw2"
+		}
+	},
+	"RoleArn":"arn:aws:iam::176748515449:role/Rekognition",
+	"Settings": {
+		"FaceSearch": {
+			"CollectionId": "faceCollection",
+			"FaceMatchThreshold": 85.5
+		}
+	}
+}

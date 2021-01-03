@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visitor Info Collection</title>
+    <link rel="shortcut icon" href="#" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>   
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+    <script type="text/javascript" src="js/lib/axios/dist/axios.standalone.js"></script>
+    <script type="text/javascript" src="js/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+    <script type="text/javascript" src="js/lib/CryptoJS/rollups/sha256.js"></script>
+    <script type="text/javascript" src="js/lib/CryptoJS/components/hmac.js"></script>
+    <script type="text/javascript" src="js/lib/CryptoJS/components/enc-base64.js"></script>
+    <script type="text/javascript" src="js/lib/url-template/url-template.js"></script>
+    <script type="text/javascript" src="js/lib/apiGatewayCore/sigV4Client.js"></script>
+    <script type="text/javascript" src="js/lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script type="text/javascript" src="js/lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script type="text/javascript" src="js/lib/apiGatewayCore/utils.js"></script>
+    <script type="text/javascript" src="js/apigClient.js"></script>
+    <script> 
+        function sendMessageToApi() {
+            
+            var visitor = document.getElementById('visitor-name').value.trim().toLowerCase();
+            console.log(visitor)
+            var phone = document.getElementById('phone-number').value.trim().toLowerCase();
+            console.log(phone)
+            var link = window.location.href;
+            var fileName;
+            var faceId;
+         
+            if (link) {
+                link = link.split('?')[1];
+                var a = link.split('&');
+                var b = a[0].split('=');
+                if (b[0] == "fileName") {
+                    fileName = b[1];
+                }
+                var c = a[1].split('=');
+                if (c[0] == "faceId") {
+                    faceId = c[1];
+                }
+                
+            }
+            console.log(fileName);
+            console.log(faceId);
+            apigClient = apigClientFactory.newClient();
+            console.log('initialized client')
+            var params = {};
+            var body = {
+                'message' : {    
+                                'name': visitor,
+                                'phoneNumber': phone,
+                                'objectKey': fileName,
+                                'faceId': faceId
+                            }
+                }
+
+            var additionalParams = {};
+
+            apigClient.visitorCheckPost(params, body, additionalParams)
+                .then(function (result) {
+                    console.log(result);
+                    var data = result.data;
+                    $("#submit-form").hide();
+                    $("#result-message").text(data);
+                }).catch(function (result) {
+                    console.log(result);
+            });
+        };
+    </script>
+</head>
+
+<body> 
+<h2 align="center">Visitor Info Collection</h2>
+    <div id="submit-form" align="center">
+        <label for="name">Name:</label>
+        <input type="text" id="visitor-name" name="name"><br><br>
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone-number" name="phoneNumber"><br><br>
+        <input type="submit" value="Submit" onclick = "sendMessageToApi()"><br><br>
+    </div>
+    <div id="result-message" align="center"></div>
+</body>
+</html>
